@@ -84,12 +84,16 @@ def parse_response(response, metric=None):
 
     if not response['timed_out']:
         total = response['hits']['total']
+        hostname = response['hits']['hits'][0]["_source"]["host"]["hostname"]
+        logfile = response['hits']['hits'][0]["_source"]["log"]["file"]["path"]
         # In ES7, hits.total changed from an integer to
         # a dict with a 'value' key.
         if isinstance(total, dict):
             total = total['value']
         result.append((metric + ['hits'], {}, total))
         result.append((metric + ['took', 'milliseconds'], {}, response['took']))
+        result.append((metric + ['host'], {}, hostname))
+        result.append((metric + ['logfile'], {} logfile))
 
         if 'aggregations' in response.keys():
             for key, value in response['aggregations'].items():
